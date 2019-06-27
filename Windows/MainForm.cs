@@ -1,9 +1,11 @@
-﻿using System;
+﻿using ImageMagick;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 // TODO: different thread - UI freezing
@@ -26,19 +28,18 @@ namespace Sri.TripPhotos
     {
         // PropertyTagOrientation 0x0112 - we know thos prop is an integer
         private const int _orientationId = 0x0112;
-        
+
         private void EnableStart()
         {
             // there has to be source and
             // destination or rename source files
-            btnStart.Enabled = (!string.IsNullOrEmpty(txtSource.Text.Trim()) && 
+            btnStart.Enabled = (!string.IsNullOrEmpty(txtSource.Text.Trim()) &&
                                 (!string.IsNullOrEmpty(txtDestination.Text.Trim()) || chkRenameSourceFiles.Checked) &&
                                 chkProcessVideos.Checked || chkProcessJpegs.Checked);
         }
 
         private Nullable<DateTime> GetDateTaken(Nullable<DateTime> dtaken) //Image image)
         {
-
             double minutes = 0;
             double temp = 0;
             if (dtaken.HasValue)
@@ -59,25 +60,24 @@ namespace Sri.TripPhotos
             return dtaken;
         }
 
-
         #region OrientImage
         //http://blog.csharphelper.com/2011/08/29/use-exif-information-to-orient-an-image-properly-in-c.aspx
         //http://blog.csharphelper.com/2011/08/27/read-an-image-files-exif-orientation-data-in-c.aspx
 
         private ExifOrientation ImageOrientation(Image img)
-        {    
+        {
             // Get the index of the orientation property.    
-            int orientation_index = Array.IndexOf(img.PropertyIdList, _orientationId);    
+            int orientation_index = Array.IndexOf(img.PropertyIdList, _orientationId);
             // If there is no such property, return Unknown.    
             if (orientation_index < 0)
             {
                 return ExifOrientation.Unknown;
             }
-            
+
             // Return the orientation value.    
             return (ExifOrientation)img.GetPropertyItem(_orientationId).Value[0];
         }
-        
+
         private bool OrientImage(string sourceFileName, string destinationFileName)
         {
             Image image = null;
@@ -157,7 +157,7 @@ namespace Sri.TripPhotos
             int totalFiles = 0;
             int tobeProcessedFiles = 0;
             int processedFiles = 0;
-            Image image = null;            
+            Image image = null;
             Nullable<DateTime> dateTaken;
             Nullable<DateTime> dtaken;
             bool processing = false;
@@ -176,7 +176,7 @@ namespace Sri.TripPhotos
                 {
                     destinationDirectory = txtDestination.Text;
                 }
-                
+
                 if (!(Directory.Exists(txtSource.Text) &&
                         Directory.Exists(destinationDirectory)))
                 {
@@ -194,27 +194,28 @@ namespace Sri.TripPhotos
                 totalFiles = files.Length;
 
                 DirectoryInfo[] directories = di.GetDirectories("*", SearchOption.AllDirectories);
-                
+                string backupFolder = "backup_" + new Random().Next(100).ToString();
+
                 // create backup folder in the destination folder
                 if (chkBackup.Checked)
-                {                   
+                {
                     // if there are no sub directories, at least one BackUp has to be created
                     Directory.CreateDirectory(string.Format("{0}{1}{2}",
                                                             destinationDirectory,
                                                             Path.DirectorySeparatorChar,
-                                                            "BackUp"));
+                                                            backupFolder));
 
                     foreach (DirectoryInfo directory in directories)
                     {
-                        newDirectory = directory.FullName.Replace(txtSource.Text, 
-                                                                  string.Format("{0}{1}{2}", 
-                                                                                destinationDirectory, 
+                        newDirectory = directory.FullName.Replace(txtSource.Text,
+                                                                  string.Format("{0}{1}{2}",
+                                                                                destinationDirectory,
                                                                                 Path.DirectorySeparatorChar,
-                                                                                "BackUp"));
+                                                                                backupFolder));
                         Directory.CreateDirectory(newDirectory);
                     }
                 }
-                
+
                 progressBar.Minimum = 0;
                 progressBar.Maximum = totalFiles;
                 progressBar.Value = processedFiles;
@@ -232,7 +233,7 @@ namespace Sri.TripPhotos
                                                                            string.Format("{0}{1}{2}",
                                                                                          destinationDirectory,
                                                                                          Path.DirectorySeparatorChar,
-                                                                                         "BackUp")));
+                                                                                         backupFolder)));
                         }
 
                         extension = file.Extension;
@@ -240,26 +241,27 @@ namespace Sri.TripPhotos
 
                         // if jp*g then process
                         // else just move to destination
-                        if ((string.Compare(file.Extension, ".jpg", true) == 0) || 
+                        if ((string.Compare(file.Extension, ".jpg", true) == 0) ||
                             (string.Compare(file.Extension, ".jpeg", true) == 0) ||
                             (string.Compare(file.Extension, ".avi", true) == 0) ||
                             (string.Compare(file.Extension, ".mp4", true) == 0) ||
                             (string.Compare(file.Extension, ".mov", true) == 0) ||
-                            (string.Compare(file.Extension, ".wav", true) == 0) //||
-                            //(string.Compare(file.Extension, ".cr2", true) == 0)
-                           )
+                            (string.Compare(file.Extension, ".wav", true) == 0) ||
+                            (string.Compare(file.Extension, ".heic", true) == 0))
+                        //|| (string.Compare(file.Extension, ".cr2", true) == 0)
                         {
                             tobeProcessedFiles++;
                             dateTaken = null;
                             dtaken = null;
                             processing = false;
 
-                            if (((string.Compare(file.Extension, ".jpg", true) == 0) || 
-                                 (string.Compare(file.Extension, ".jpeg", true) == 0) // ||
-                                // (string.Compare(file.Extension, ".cr2", true) == 0)
-                                )
-                                    && (chkProcessJpegs.Checked))
-                                {
+                            if (((string.Compare(file.Extension, ".jpg", true) == 0) ||
+                                 (string.Compare(file.Extension, ".jpeg", true) == 0))
+                                 &&
+                                 (chkProcessJpegs.Checked))
+                            // ||
+                            // (string.Compare(file.Extension, ".cr2", true) == 0))
+                            {
                                 // jpegs
                                 try
                                 {
@@ -289,6 +291,22 @@ namespace Sri.TripPhotos
                                     {
                                         image.Dispose();
                                     }
+                                }
+                            }
+                            else if ((string.Compare(file.Extension, ".heic", true) == 0) && chkConvertHEIC.Checked)
+                            {
+                                using (MagickImage img = new MagickImage(file))
+                                {
+                                    img.Format = MagickFormat.Jpeg;
+                                    ExifProfile exif = img.GetExifProfile();
+
+                                    //Convert date taken metadata to a DateTime object   
+                                    dtaken = DateTime.ParseExact(exif.GetValue(ExifTag.DateTimeOriginal).ToString(),
+                                                                    "yyyy:MM:dd HH:mm:ss",
+                                                                    null);
+
+                                    dateTaken = GetDateTaken(dtaken);
+                                    processing = true;
                                 }
                             }
                             else if (chkProcessVideos.Checked)
@@ -332,7 +350,7 @@ namespace Sri.TripPhotos
                                                                                     extension);
                                 }
 
-                                // TODO: what if the random # is regenerated?
+                                // TODO: what if the same random # is regenerated?
                                 // then we will lose a file
                                 if (File.Exists(destFileFullName))
                                 {
@@ -354,7 +372,16 @@ namespace Sri.TripPhotos
 
                                 //if (chkAdjustOrientation.Checked && !OrientImage (file.FullName, destFileFullName))
                                 //{
-                                    File.Copy (file.FullName, destFileFullName, false);
+                                File.Copy(file.FullName, destFileFullName, false);
+                                if ((string.Compare(file.Extension, ".heic", true) == 0) && chkConvertHEIC.Checked)
+                                {
+                                    using (MagickImage img = new MagickImage(destFileFullName))
+                                    {
+                                        img.Format = MagickFormat.Jpeg;
+                                        img.Write(Regex.Replace(destFileFullName, ".heic", ".jpg", RegexOptions.IgnoreCase));
+                                        File.Delete(destFileFullName);
+                                    }
+                                }
                                 //}
 
                                 processedFiles++;
@@ -366,7 +393,7 @@ namespace Sri.TripPhotos
                                 }
                             }
 
-                            destFileFullName = string.Empty; 
+                            destFileFullName = string.Empty;
                         }
                         else // not a jp*g or avi
                         {
@@ -382,14 +409,14 @@ namespace Sri.TripPhotos
                                 }
                             }
                         }
-                        
+
                         progressBar.Value++;
                     }
                     catch (Exception ex)
                     {
-                        richTextFailed.AppendText(string.Format("{0} - {1} - {2}\r\n", 
-                                                                file.FullName, 
-                                                                destFileFullName, 
+                        richTextFailed.AppendText(string.Format("{0} - {1} - {2}\r\n",
+                                                                file.FullName,
+                                                                destFileFullName,
                                                                 ex.Message));
                     }
                 }
@@ -397,13 +424,13 @@ namespace Sri.TripPhotos
                 // Delete empty source directories
                 // if (chkDeleteSourceFiles.Checked)
                 // {
-                    for (int i = directories.Length - 1; i >= 0; i--)
+                for (int i = directories.Length - 1; i >= 0; i--)
+                {
+                    if (directories[i].GetFiles().Length == 0)
                     {
-                        if (directories[i].GetFiles().Length == 0)
-                        {
-                            directories[i].Delete();
-                        }
+                        directories[i].Delete();
                     }
+                }
                 // }
 
                 progressBar.Visible = false;
@@ -423,10 +450,10 @@ namespace Sri.TripPhotos
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, 
-                    ex.Message, 
-                    "Error", 
-                    MessageBoxButtons.OK, 
+                MessageBox.Show(this,
+                    ex.Message,
+                    "Error",
+                    MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
         }
@@ -442,7 +469,7 @@ namespace Sri.TripPhotos
 
         private void btnDestination_Click(object sender, EventArgs e)
         {
-            folderBrowserDestination.SelectedPath = Path.Combine(Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.Personal)).FullName, 
+            folderBrowserDestination.SelectedPath = Path.Combine(Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.Personal)).FullName,
                                                                  "SkyDrive");
 
             if (folderBrowserDestination.ShowDialog(this) == DialogResult.OK)
@@ -453,7 +480,7 @@ namespace Sri.TripPhotos
 
         private void btnSource_Click(object sender, EventArgs e)
         {
-            folderBrowserSource.SelectedPath = Path.Combine(Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.Personal)).FullName, 
+            folderBrowserSource.SelectedPath = Path.Combine(Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.Personal)).FullName,
                                                             "SkyDrive");
 
             if (folderBrowserSource.ShowDialog(this) == DialogResult.OK)
@@ -487,5 +514,6 @@ namespace Sri.TripPhotos
         {
             EnableStart();
         }
+
     }
 }

@@ -51,6 +51,7 @@
             this.chkProcessJpegs = new System.Windows.Forms.CheckBox();
             this.chkProcessVideos = new System.Windows.Forms.CheckBox();
             this.chkPrefixYear = new System.Windows.Forms.CheckBox();
+            this.chkConvertHEIC = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -157,7 +158,7 @@
             // 
             this.chkBackup.AutoSize = true;
             this.chkBackup.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.chkBackup.Location = new System.Drawing.Point(126, 150);
+            this.chkBackup.Location = new System.Drawing.Point(126, 175);
             this.chkBackup.Name = "chkBackup";
             this.chkBackup.Size = new System.Drawing.Size(142, 19);
             this.chkBackup.TabIndex = 7;
@@ -168,7 +169,7 @@
             // 
             this.chkOpenFolders.AutoSize = true;
             this.chkOpenFolders.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.chkOpenFolders.Location = new System.Drawing.Point(126, 175);
+            this.chkOpenFolders.Location = new System.Drawing.Point(126, 200);
             this.chkOpenFolders.Name = "chkOpenFolders";
             this.chkOpenFolders.Size = new System.Drawing.Size(206, 19);
             this.chkOpenFolders.TabIndex = 9;
@@ -181,7 +182,7 @@
             this.chkRenameSourceFiles.Checked = true;
             this.chkRenameSourceFiles.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkRenameSourceFiles.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.chkRenameSourceFiles.Location = new System.Drawing.Point(126, 125);
+            this.chkRenameSourceFiles.Location = new System.Drawing.Point(126, 150);
             this.chkRenameSourceFiles.Name = "chkRenameSourceFiles";
             this.chkRenameSourceFiles.Size = new System.Drawing.Size(189, 19);
             this.chkRenameSourceFiles.TabIndex = 10;
@@ -206,9 +207,9 @@
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.Location = new System.Drawing.Point(555, 100);
+            this.groupBox1.Location = new System.Drawing.Point(618, 100);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(217, 94);
+            this.groupBox1.Size = new System.Drawing.Size(154, 94);
             this.groupBox1.TabIndex = 13;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Add";
@@ -216,18 +217,18 @@
             // txtMinutes
             // 
             this.txtMinutes.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtMinutes.Location = new System.Drawing.Point(64, 53);
+            this.txtMinutes.Location = new System.Drawing.Point(67, 53);
             this.txtMinutes.Name = "txtMinutes";
-            this.txtMinutes.Size = new System.Drawing.Size(143, 23);
+            this.txtMinutes.Size = new System.Drawing.Size(73, 23);
             this.txtMinutes.TabIndex = 3;
             this.txtMinutes.Text = "0";
             // 
             // txtHours
             // 
             this.txtHours.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtHours.Location = new System.Drawing.Point(64, 24);
+            this.txtHours.Location = new System.Drawing.Point(67, 24);
             this.txtHours.Name = "txtHours";
-            this.txtHours.Size = new System.Drawing.Size(143, 23);
+            this.txtHours.Size = new System.Drawing.Size(73, 23);
             this.txtHours.TabIndex = 2;
             this.txtHours.Text = "0";
             // 
@@ -285,18 +286,32 @@
             this.chkPrefixYear.Checked = true;
             this.chkPrefixYear.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkPrefixYear.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.chkPrefixYear.Location = new System.Drawing.Point(442, 100);
+            this.chkPrefixYear.Location = new System.Drawing.Point(126, 125);
             this.chkPrefixYear.Name = "chkPrefixYear";
             this.chkPrefixYear.Size = new System.Drawing.Size(78, 19);
             this.chkPrefixYear.TabIndex = 17;
             this.chkPrefixYear.Text = "Prefix Year";
             this.chkPrefixYear.UseVisualStyleBackColor = true;
             // 
+            // chkConvertHEIC
+            // 
+            this.chkConvertHEIC.AutoSize = true;
+            this.chkConvertHEIC.Checked = true;
+            this.chkConvertHEIC.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkConvertHEIC.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.chkConvertHEIC.Location = new System.Drawing.Point(442, 100);
+            this.chkConvertHEIC.Name = "chkConvertHEIC";
+            this.chkConvertHEIC.Size = new System.Drawing.Size(134, 19);
+            this.chkConvertHEIC.TabIndex = 18;
+            this.chkConvertHEIC.Text = "Convert HEIC to jpeg";
+            this.chkConvertHEIC.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(785, 544);
+            this.Controls.Add(this.chkConvertHEIC);
             this.Controls.Add(this.chkPrefixYear);
             this.Controls.Add(this.chkProcessVideos);
             this.Controls.Add(this.chkProcessJpegs);
@@ -353,6 +368,7 @@
         private System.Windows.Forms.CheckBox chkProcessJpegs;
         private System.Windows.Forms.CheckBox chkProcessVideos;
         private System.Windows.Forms.CheckBox chkPrefixYear;
+        private System.Windows.Forms.CheckBox chkConvertHEIC;
     }
 }
 
