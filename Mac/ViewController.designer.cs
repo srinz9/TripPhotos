@@ -7,7 +7,7 @@
 using Foundation;
 using System.CodeDom.Compiler;
 
-namespace ImageProcessorMac
+namespace TripPhotos
 {
     [Register ("ViewController")]
     partial class ViewController
@@ -20,9 +20,6 @@ namespace ImageProcessorMac
 
         [Outlet]
         AppKit.NSButton chkBackupFiles { get; set; }
-
-        [Outlet]
-        AppKit.NSButton chkDeleteSourceFiles { get; set; }
 
         [Outlet]
         AppKit.NSButton chkPrefixYear { get; set; }
@@ -77,7 +74,7 @@ namespace ImageProcessorMac
 
         [Action ("TextSourceChanged:")]
         partial void TextSourceChanged (Foundation.NSObject sender);
-        
+
         void ReleaseDesignerOutlets ()
         {
             if (btnDestinationFolder != null) {
@@ -88,11 +85,6 @@ namespace ImageProcessorMac
             if (chkBackupFiles != null) {
                 chkBackupFiles.Dispose ();
                 chkBackupFiles = null;
-            }
-
-            if (chkDeleteSourceFiles != null) {
-                chkDeleteSourceFiles.Dispose ();
-                chkDeleteSourceFiles = null;
             }
 
             if (chkPrefixYear != null) {

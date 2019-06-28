@@ -1,7 +1,7 @@
 ﻿using AppKit;
 using Foundation;
 
-namespace ImageProcessorMac
+namespace TripPhotos
 {
     [Register("AppDelegate")]
     public class AppDelegate : NSApplicationDelegate

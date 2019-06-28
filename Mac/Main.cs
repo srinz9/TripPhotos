@@ -1,6 +1,6 @@
 ﻿using AppKit;
 
-namespace ImageProcessorMac
+namespace TripPhotos
 {
     static class MainClass
     {

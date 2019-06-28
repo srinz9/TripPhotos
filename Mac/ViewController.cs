@@ -5,7 +5,7 @@ using Foundation;
 using ImageIO;
 using System.Globalization;  //you may need to add this DLL
 
-namespace ImageProcessorMac
+namespace TripPhotos
 {
     public partial class ViewController : NSViewController
     {
@@ -118,7 +118,7 @@ namespace ImageProcessorMac
 
         public void StartRenaming(string sourceDirectory, string destinationDirectory,
                                     bool renameSourceFiles, bool backup, bool prefixYear,
-                                    bool processJpegs, bool deleteSourceFiles, bool processVideos)
+                                    bool processJpegs, bool processVideos)
         {
             string destFileFullName = string.Empty;
             string destFileName = string.Empty;
@@ -222,8 +222,8 @@ namespace ImageProcessorMac
                             dtaken = null;
                             processing = false;
 
-                            if (((string.Compare(file.Extension, ".jpg", true) == 0) || 
-                                 (string.Compare(file.Extension, ".jpeg", true) == 0) || 
+                            if (((string.Compare(file.Extension, ".jpg", true) == 0) ||
+                                 (string.Compare(file.Extension, ".jpeg", true) == 0) ||
                                  (string.Compare(file.Extension, ".cr2", true) == 0))
                                     && (processJpegs))
                             {
@@ -308,7 +308,7 @@ namespace ImageProcessorMac
                                 processedFiles++;
 
                                 // if source files are to be deleted, then lets do it
-                                if (deleteSourceFiles || renameSourceFiles)
+                                if (renameSourceFiles)
                                 {
                                     File.Delete(file.FullName);
                                 }
@@ -322,12 +322,10 @@ namespace ImageProcessorMac
                             {
                                 destFileFullName = GetDestinationFileFullName(file.FullName, destinationDirectory, destFileName, extension);
                                 File.Copy(file.FullName, destFileFullName, false);
-
-                                // if source files are to be deleted, then lets do it
-                                if (deleteSourceFiles)
-                                {
-                                    File.Delete(file.FullName);
-                                }
+                            }
+                            else
+                            {
+                                File.Delete(file.FullName);
                             }
                         }
 
@@ -336,18 +334,6 @@ namespace ImageProcessorMac
                     catch (Exception ex)
                     {
                         richTextFailed.StringValue += string.Format("{0} - {1} - {2}\r\n", file.FullName, destFileFullName, ex.Message);
-                    }
-                }
-
-                // Delete empty source directories
-                if (deleteSourceFiles)
-                {
-                    for (int i = directories.Length - 1; i >= 0; i--)
-                    {
-                        if (directories[i].GetFiles().Length == 0)
-                        {
-                            directories[i].Delete();
-                        }
                     }
                 }
 
@@ -393,10 +379,10 @@ namespace ImageProcessorMac
         {
             MinutesToAdd(txtAddHours.StringValue, txtAddMinutes.StringValue);
 
-            StartRenaming(txtSourceFolder.StringValue, txtDestinationFolder.StringValue, 
+            StartRenaming(txtSourceFolder.StringValue, txtDestinationFolder.StringValue,
                           (chkRenameSourceFiles.State == NSCellStateValue.On), (chkBackupFiles.State == NSCellStateValue.On),
                           (chkPrefixYear.State == NSCellStateValue.On), (chkProcessJpegs.State == NSCellStateValue.On),
-                          (chkDeleteSourceFiles.State == NSCellStateValue.On), (chkProcessVideos.State == NSCellStateValue.On)); 
+                          (chkProcessVideos.State == NSCellStateValue.On));
         }
 
         partial void TextDestinationChanged(Foundation.NSObject sender)
@@ -415,9 +401,6 @@ namespace ImageProcessorMac
             bool isNotChecked = !(chkRenameSourceFiles.State == NSCellStateValue.On);
             txtDestinationFolder.Enabled = isNotChecked;
             btnDestinationFolder.Enabled = isNotChecked;
-
-            // TODO: shouldnt the value be changed too?
-            chkDeleteSourceFiles.Enabled = isNotChecked;
 
             EnableStart();
         }
