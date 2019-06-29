@@ -52,6 +52,7 @@
             this.chkProcessVideos = new System.Windows.Forms.CheckBox();
             this.chkPrefixYear = new System.Windows.Forms.CheckBox();
             this.chkConvertHEIC = new System.Windows.Forms.CheckBox();
+            this.chkProcessHEIC = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -260,9 +261,9 @@
             this.chkProcessJpegs.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.chkProcessJpegs.Location = new System.Drawing.Point(126, 100);
             this.chkProcessJpegs.Name = "chkProcessJpegs";
-            this.chkProcessJpegs.Size = new System.Drawing.Size(90, 19);
+            this.chkProcessJpegs.Size = new System.Drawing.Size(83, 19);
             this.chkProcessJpegs.TabIndex = 14;
-            this.chkProcessJpegs.Text = "Process JPGs";
+            this.chkProcessJpegs.Text = "Process jpg";
             this.chkProcessJpegs.UseVisualStyleBackColor = true;
             this.chkProcessJpegs.CheckedChanged += new System.EventHandler(this.chkProcess_CheckedChanged);
             // 
@@ -299,18 +300,33 @@
             this.chkConvertHEIC.Checked = true;
             this.chkConvertHEIC.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkConvertHEIC.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.chkConvertHEIC.Location = new System.Drawing.Point(442, 100);
+            this.chkConvertHEIC.Location = new System.Drawing.Point(442, 125);
             this.chkConvertHEIC.Name = "chkConvertHEIC";
-            this.chkConvertHEIC.Size = new System.Drawing.Size(134, 19);
+            this.chkConvertHEIC.Size = new System.Drawing.Size(128, 19);
             this.chkConvertHEIC.TabIndex = 18;
-            this.chkConvertHEIC.Text = "Convert HEIC to jpeg";
+            this.chkConvertHEIC.Text = "Convert HEIC to jpg";
             this.chkConvertHEIC.UseVisualStyleBackColor = true;
+            // 
+            // chkProcessHEIC
+            // 
+            this.chkProcessHEIC.AutoSize = true;
+            this.chkProcessHEIC.Checked = true;
+            this.chkProcessHEIC.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkProcessHEIC.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.chkProcessHEIC.Location = new System.Drawing.Point(442, 100);
+            this.chkProcessHEIC.Name = "chkProcessHEIC";
+            this.chkProcessHEIC.Size = new System.Drawing.Size(92, 19);
+            this.chkProcessHEIC.TabIndex = 19;
+            this.chkProcessHEIC.Text = "Process HEIC";
+            this.chkProcessHEIC.UseVisualStyleBackColor = true;
+            this.chkProcessHEIC.CheckedChanged += new System.EventHandler(this.ChkProcessHEIC_CheckedChanged);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(785, 544);
+            this.Controls.Add(this.chkProcessHEIC);
             this.Controls.Add(this.chkConvertHEIC);
             this.Controls.Add(this.chkPrefixYear);
             this.Controls.Add(this.chkProcessVideos);
@@ -369,6 +385,7 @@
         private System.Windows.Forms.CheckBox chkProcessVideos;
         private System.Windows.Forms.CheckBox chkPrefixYear;
         private System.Windows.Forms.CheckBox chkConvertHEIC;
+        private System.Windows.Forms.CheckBox chkProcessHEIC;
     }
 }
 

@@ -293,7 +293,7 @@ namespace Sri.TripPhotos
                                     }
                                 }
                             }
-                            else if ((string.Compare(file.Extension, ".heic", true) == 0) && chkConvertHEIC.Checked)
+                            else if ((string.Compare(file.Extension, ".heic", true) == 0) && chkProcessHEIC.Checked)
                             {
                                 using (MagickImage img = new MagickImage(file))
                                 {
@@ -309,7 +309,12 @@ namespace Sri.TripPhotos
                                     processing = true;
                                 }
                             }
-                            else if (chkProcessVideos.Checked)
+                            else if (((string.Compare(file.Extension, ".avi", true) == 0) ||
+                                      (string.Compare(file.Extension, ".mp4", true) == 0) ||
+                                      (string.Compare(file.Extension, ".mov", true) == 0) ||
+                                      (string.Compare(file.Extension, ".wav", true) == 0)) 
+                                        &&
+                                      (chkProcessVideos.Checked))
                             {
                                 // videos
                                 dtaken = file.LastWriteTime;
@@ -436,7 +441,7 @@ namespace Sri.TripPhotos
                 progressBar.Visible = false;
 
                 MessageBox.Show(this,
-                                string.Format("{0}/{1} JPEGs/AVIs processed \r\n{2} total files",
+                                string.Format("{0}/{1} files processed \r\n{2} total files",
                                               processedFiles, tobeProcessedFiles, totalFiles),
                                 "File renamer",
                                 MessageBoxButtons.OK,
@@ -515,5 +520,10 @@ namespace Sri.TripPhotos
             EnableStart();
         }
 
+        private void ChkProcessHEIC_CheckedChanged(object sender, EventArgs e)
+        {
+            chkConvertHEIC.Enabled = chkProcessHEIC.Checked;
+            chkConvertHEIC.Checked = chkProcessHEIC.Checked;
+        }
     }
 }
