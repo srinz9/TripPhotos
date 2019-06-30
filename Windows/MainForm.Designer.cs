@@ -53,6 +53,7 @@
             this.chkPrefixYear = new System.Windows.Forms.CheckBox();
             this.chkConvertHEIC = new System.Windows.Forms.CheckBox();
             this.chkProcessHEIC = new System.Windows.Forms.CheckBox();
+            this.lblVersion = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -141,7 +142,7 @@
             this.richTextFailed.Location = new System.Drawing.Point(12, 256);
             this.richTextFailed.Name = "richTextFailed";
             this.richTextFailed.ReadOnly = true;
-            this.richTextFailed.Size = new System.Drawing.Size(760, 276);
+            this.richTextFailed.Size = new System.Drawing.Size(760, 257);
             this.richTextFailed.TabIndex = 7;
             this.richTextFailed.TabStop = false;
             this.richTextFailed.Text = "";
@@ -321,11 +322,21 @@
             this.chkProcessHEIC.UseVisualStyleBackColor = true;
             this.chkProcessHEIC.CheckedChanged += new System.EventHandler(this.ChkProcessHEIC_CheckedChanged);
             // 
+            // lblVersion
+            // 
+            this.lblVersion.AutoSize = true;
+            this.lblVersion.Location = new System.Drawing.Point(727, 520);
+            this.lblVersion.Name = "lblVersion";
+            this.lblVersion.Size = new System.Drawing.Size(45, 15);
+            this.lblVersion.TabIndex = 20;
+            this.lblVersion.Text = "Version";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(785, 544);
+            this.Controls.Add(this.lblVersion);
             this.Controls.Add(this.chkProcessHEIC);
             this.Controls.Add(this.chkConvertHEIC);
             this.Controls.Add(this.chkPrefixYear);
@@ -386,6 +397,7 @@
         private System.Windows.Forms.CheckBox chkPrefixYear;
         private System.Windows.Forms.CheckBox chkConvertHEIC;
         private System.Windows.Forms.CheckBox chkProcessHEIC;
+        private System.Windows.Forms.Label lblVersion;
     }
 }
 

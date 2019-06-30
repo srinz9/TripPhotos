@@ -143,6 +143,7 @@ namespace Sri.TripPhotos
         public MainForm()
         {
             InitializeComponent();
+            this.lblVersion.Text = Application.ProductVersion;
         }
 
         private void btnStart_Click(object sender, EventArgs e)
