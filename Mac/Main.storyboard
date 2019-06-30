@@ -1,6 +1,7 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
+        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13771"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
         <capability name="system font weights other than Regular or Bold" minToolsVersion="7.0"/>
@@ -760,28 +761,28 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ff8-lZ-Ngp">
-                                <rect key="frame" x="196" y="305" width="265" height="18"/>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="d4X-OV-Tg1">
+                                <rect key="frame" x="19" y="305" width="111" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Process Videos (avi, mp4, mov, wav)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="ttE-PN-om0">
+                                <buttonCell key="cell" type="check" title="Process jpgs" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Qak-Vh-D72">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="d4X-OV-Tg1">
-                                <rect key="frame" x="19" y="305" width="161" height="18"/>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q5w-b0-iW6">
+                                <rect key="frame" x="375" y="305" width="111" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Process JPGs" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Qak-Vh-D72">
+                                <buttonCell key="cell" type="check" title="Process HEIC" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="iDf-wG-OlB">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
                             <progressIndicator wantsLayer="YES" canDrawConcurrently="YES" fixedFrame="YES" maxValue="100" displayedWhenStopped="NO" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="hwW-cT-6xR">
-                                <rect key="frame" x="21" y="220" width="616" height="20"/>
+                                <rect key="frame" x="21" y="211" width="616" height="20"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </progressIndicator>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="V0r-ro-F3I">
-                                <rect key="frame" x="450" y="306" width="86" height="17"/>
+                                <rect key="frame" x="450" y="286" width="86" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Add hours" id="Znn-mb-908">
                                     <font key="font" metaFont="system"/>
@@ -790,7 +791,7 @@
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Zjq-kc-uKg">
-                                <rect key="frame" x="450" y="281" width="86" height="17"/>
+                                <rect key="frame" x="450" y="261" width="86" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Add minutes" id="JaX-ja-9xD">
                                     <font key="font" metaFont="system"/>
@@ -799,7 +800,7 @@
                                 </textFieldCell>
                             </textField>
                             <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sOI-ZI-yGs">
-                                <rect key="frame" x="541" y="303" width="96" height="22"/>
+                                <rect key="frame" x="541" y="283" width="96" height="22"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="oaZ-tG-a4S">
                                     <font key="font" metaFont="system"/>
@@ -808,7 +809,7 @@
                                 </textFieldCell>
                             </textField>
                             <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wJk-Wf-dNf">
-                                <rect key="frame" x="541" y="278" width="96" height="22"/>
+                                <rect key="frame" x="541" y="258" width="96" height="22"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="fiE-3b-Gr3">
                                     <font key="font" metaFont="system"/>
@@ -816,17 +817,6 @@
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Uey-N9-hFc">
-                                <rect key="frame" x="562" y="240" width="81" height="32"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="push" title="Start" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="0ar-07-nFE">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="ClickedStart1:" target="XfG-lQ-9wD" id="bJA-tW-skb"/>
-                                </connections>
-                            </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NLu-MJ-gh9">
                                 <rect key="frame" x="134" y="331" width="344" height="11"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -845,7 +835,7 @@
                                 </buttonCell>
                             </button>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TId-3f-u6P">
-                                <rect key="frame" x="20" y="10" width="617" height="211"/>
+                                <rect key="frame" x="20" y="10" width="617" height="203"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" allowsEditingTextAttributes="YES" id="9Ey-nS-RfC">
                                     <font key="font" metaFont="system"/>
@@ -853,6 +843,25 @@
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ff8-lZ-Ngp">
+                                <rect key="frame" x="128" y="305" width="243" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Process videos (avi, mp4, mov, wav)" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="ttE-PN-om0">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Uey-N9-hFc">
+                                <rect key="frame" x="562" y="222" width="81" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="Start" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="0ar-07-nFE">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="ClickedStart1:" target="XfG-lQ-9wD" id="bJA-tW-skb"/>
+                                </connections>
+                            </button>
                         </subviews>
                     </view>
                     <connections>
@@ -860,6 +869,7 @@
                         <outlet property="btnStart1" destination="Uey-N9-hFc" id="bFF-3s-MjJ"/>
                         <outlet property="chkBackupFiles" destination="8bz-3x-GwI" id="Zar-OR-DnA"/>
                         <outlet property="chkPrefixYear" destination="bhY-Sq-QOz" id="gNS-oj-2Og"/>
+                        <outlet property="chkProcessHEIC" destination="q5w-b0-iW6" id="e9q-Kk-gaF"/>
                         <outlet property="chkProcessJpegs" destination="d4X-OV-Tg1" id="98L-gQ-rls"/>
                         <outlet property="chkProcessVideos" destination="ff8-lZ-Ngp" id="c49-Hu-MYq"/>
                         <outlet property="chkRenameSourceFiles" destination="3xd-dd-s7b" id="kp2-wu-aAm"/>

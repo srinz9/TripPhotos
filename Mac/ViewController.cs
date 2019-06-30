@@ -4,6 +4,9 @@ using AppKit;
 using Foundation;
 using ImageIO;
 using System.Globalization;  //you may need to add this DLL
+using ImageMagick;
+
+//https://docs.microsoft.com/en-us/xamarin/mac/get-started/hello-mac#creating-the-interface
 
 namespace TripPhotos
 {
@@ -118,7 +121,7 @@ namespace TripPhotos
 
         public void StartRenaming(string sourceDirectory, string destinationDirectory,
                                     bool renameSourceFiles, bool backup, bool prefixYear,
-                                    bool processJpegs, bool processVideos)
+                                    bool processJpegs, bool processVideos, bool proceessHEIC)
         {
             string destFileFullName = string.Empty;
             string destFileName = string.Empty;
@@ -214,7 +217,8 @@ namespace TripPhotos
                             (string.Compare(file.Extension, ".mp4", true) == 0) ||
                             (string.Compare(file.Extension, ".mov", true) == 0) ||
                             (string.Compare(file.Extension, ".wav", true) == 0) ||
-                            (string.Compare(file.Extension, ".cr2", true) == 0)
+                            (string.Compare(file.Extension, ".heic", true) == 0)
+                           //(string.Compare(file.Extension, ".cr2", true) == 0)
                            )
                         {
                             tobeProcessedFiles++;
@@ -223,11 +227,12 @@ namespace TripPhotos
                             processing = false;
 
                             if (((string.Compare(file.Extension, ".jpg", true) == 0) ||
-                                 (string.Compare(file.Extension, ".jpeg", true) == 0) ||
-                                 (string.Compare(file.Extension, ".cr2", true) == 0))
-                                    && (processJpegs))
+                                 (string.Compare(file.Extension, ".jpeg", true) == 0))
+                                    //(string.Compare(file.Extension, ".cr2", true) == 0))
+                                 &&
+                                 (processJpegs))
                             {
-                                // jpegs
+                                // images
                                 try
                                 {
                                     dtaken = ExtractDateTimeTaken(file.FullName);
@@ -239,7 +244,28 @@ namespace TripPhotos
                                     richTextFailed.StringValue += string.Format("{0} - {1}\r\n", file.FullName, ex.Message);
                                 }
                             }
-                            else if (processVideos)
+                            else if ((string.Compare(file.Extension, ".heic", true) == 0) && proceessHEIC)
+                            {
+                                using (MagickImage img = new MagickImage(file))
+                                {
+                                    img.Format = MagickFormat.Jpeg;
+                                    ExifProfile exif = img.GetExifProfile();
+
+                                    //Convert date taken metadata to a DateTime object   
+                                    dtaken = DateTime.ParseExact(exif.GetValue(ExifTag.DateTimeOriginal).ToString(),
+                                                                    "yyyy:MM:dd HH:mm:ss",
+                                                                    null);
+
+                                    dateTaken = ActualGetDateTaken(dtaken);
+                                    processing = true;
+                                }
+                            }
+                            else if (((string.Compare(file.Extension, ".avi", true) == 0) ||
+                                      (string.Compare(file.Extension, ".mp4", true) == 0) ||
+                                      (string.Compare(file.Extension, ".mov", true) == 0) ||
+                                      (string.Compare(file.Extension, ".wav", true) == 0))
+                                      &&
+                                      (processVideos))
                             {
                                 // videos
                                 dtaken = file.LastWriteTime;
@@ -341,7 +367,7 @@ namespace TripPhotos
                 using (var alert = new NSAlert())
                 {
                     alert.AlertStyle = NSAlertStyle.Informational;
-                    alert.InformativeText = string.Format("{0}/{1} JPEGs/AVIs processed \r\n{2} total files", processedFiles, tobeProcessedFiles, totalFiles);
+                    alert.InformativeText = string.Format("{0}/{1} files processed \r\n{2} total files", processedFiles, tobeProcessedFiles, totalFiles);
                     alert.MessageText = "Done";
                     alert.BeginSheet(this.View.Window);
                 }
@@ -382,7 +408,7 @@ namespace TripPhotos
             StartRenaming(txtSourceFolder.StringValue, txtDestinationFolder.StringValue,
                           (chkRenameSourceFiles.State == NSCellStateValue.On), (chkBackupFiles.State == NSCellStateValue.On),
                           (chkPrefixYear.State == NSCellStateValue.On), (chkProcessJpegs.State == NSCellStateValue.On),
-                          (chkProcessVideos.State == NSCellStateValue.On));
+                          (chkProcessVideos.State == NSCellStateValue.On), (chkProcessHEIC.State == NSCellStateValue.On));
         }
 
         partial void TextDestinationChanged(Foundation.NSObject sender)
@@ -411,7 +437,7 @@ namespace TripPhotos
             // destination or rename source files
             btnStart1.Enabled = (!string.IsNullOrEmpty(txtSourceFolder.StringValue.Trim()) &&
                                   (!string.IsNullOrEmpty(txtDestinationFolder.StringValue.Trim()) || (chkRenameSourceFiles.State == NSCellStateValue.On)) &&
-                                  (chkProcessVideos.State == NSCellStateValue.On) || (chkProcessJpegs.State == NSCellStateValue.On));
+                                  (chkProcessVideos.State == NSCellStateValue.On) || (chkProcessJpegs.State == NSCellStateValue.On) || (chkProcessHEIC.State == NSCellStateValue.On));
         }
     }
 }

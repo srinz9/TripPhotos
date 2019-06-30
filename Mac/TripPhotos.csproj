@@ -34,8 +34,8 @@
       <CustomCommands>
         <Command>
           <type>AfterBuild</type>
-          <command>rm -rf "$(ProjectDir)/obj"</command>
-          <workingdir>$(ProjectDir)</workingdir>
+          <command>rm -rf "/obj"</command>
+          <workingdir></workingdir>
         </Command>
       </CustomCommands>
     </CustomCommands>
@@ -62,6 +62,11 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.Mac" />
+    <Reference Include="netstandard" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="Magick.NET-Q8-x64">
+      <HintPath>packages\Magick.NET-Q8-x64.7.14.0.1\lib\netstandard20\Magick.NET-Q8-x64.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
@@ -83,6 +88,7 @@
   <ItemGroup>
     <None Include="Info.plist" />
     <None Include="Entitlements.plist" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
