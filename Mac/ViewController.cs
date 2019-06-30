@@ -4,7 +4,6 @@ using AppKit;
 using Foundation;
 using ImageIO;
 using System.Globalization;  //you may need to add this DLL
-using ImageMagick;
 
 //https://docs.microsoft.com/en-us/xamarin/mac/get-started/hello-mac#creating-the-interface
 
@@ -55,9 +54,9 @@ namespace TripPhotos
         }
 
         //http://chadkuehn.com/read-metadata-from-photos-in-c/
-        private Nullable<DateTime> ExtractDateTimeTaken(string path)
+        private DateTime? ExtractDateTimeTaken(string path)
         {
-            Nullable<DateTime> dt = null;
+            DateTime? dt = null;
             NSUrl url = new NSUrl(path: path, isDir: false);
             CGImageSource myImageSource = CGImageSource.FromUrl(url, null);
             var ns = new NSDictionary();
@@ -80,7 +79,7 @@ namespace TripPhotos
             return dt;
         }
 
-        private Nullable<DateTime> ActualGetDateTaken(Nullable<DateTime> dtaken) //Image image)
+        private DateTime? ActualGetDateTaken(DateTime? dtaken) //Image image)
         {
             if (dtaken.HasValue)
             {
@@ -121,7 +120,7 @@ namespace TripPhotos
 
         public void StartRenaming(string sourceDirectory, string destinationDirectory,
                                     bool renameSourceFiles, bool backup, bool prefixYear,
-                                    bool processJpegs, bool processVideos, bool proceessHEIC)
+                                    bool processJpegs, bool processVideos)
         {
             string destFileFullName = string.Empty;
             string destFileName = string.Empty;
@@ -133,8 +132,8 @@ namespace TripPhotos
             int tobeProcessedFiles = 0;
             int processedFiles = 0;
             //Image image = null;
-            Nullable<DateTime> dateTaken;
-            Nullable<DateTime> dtaken;
+            DateTime? dateTaken;
+            DateTime? dtaken;
             bool processing = false;
 
             try
@@ -242,22 +241,6 @@ namespace TripPhotos
                                 catch (Exception ex)
                                 {
                                     richTextFailed.StringValue += string.Format("{0} - {1}\r\n", file.FullName, ex.Message);
-                                }
-                            }
-                            else if ((string.Compare(file.Extension, ".heic", true) == 0) && proceessHEIC)
-                            {
-                                using (MagickImage img = new MagickImage(file))
-                                {
-                                    img.Format = MagickFormat.Jpeg;
-                                    ExifProfile exif = img.GetExifProfile();
-
-                                    //Convert date taken metadata to a DateTime object   
-                                    dtaken = DateTime.ParseExact(exif.GetValue(ExifTag.DateTimeOriginal).ToString(),
-                                                                    "yyyy:MM:dd HH:mm:ss",
-                                                                    null);
-
-                                    dateTaken = ActualGetDateTaken(dtaken);
-                                    processing = true;
                                 }
                             }
                             else if (((string.Compare(file.Extension, ".avi", true) == 0) ||
@@ -408,7 +391,7 @@ namespace TripPhotos
             StartRenaming(txtSourceFolder.StringValue, txtDestinationFolder.StringValue,
                           (chkRenameSourceFiles.State == NSCellStateValue.On), (chkBackupFiles.State == NSCellStateValue.On),
                           (chkPrefixYear.State == NSCellStateValue.On), (chkProcessJpegs.State == NSCellStateValue.On),
-                          (chkProcessVideos.State == NSCellStateValue.On), (chkProcessHEIC.State == NSCellStateValue.On));
+                          (chkProcessVideos.State == NSCellStateValue.On));
         }
 
         partial void TextDestinationChanged(Foundation.NSObject sender)
@@ -437,7 +420,7 @@ namespace TripPhotos
             // destination or rename source files
             btnStart1.Enabled = (!string.IsNullOrEmpty(txtSourceFolder.StringValue.Trim()) &&
                                   (!string.IsNullOrEmpty(txtDestinationFolder.StringValue.Trim()) || (chkRenameSourceFiles.State == NSCellStateValue.On)) &&
-                                  (chkProcessVideos.State == NSCellStateValue.On) || (chkProcessJpegs.State == NSCellStateValue.On) || (chkProcessHEIC.State == NSCellStateValue.On));
+                                  (chkProcessVideos.State == NSCellStateValue.On) || (chkProcessJpegs.State == NSCellStateValue.On));
         }
     }
 }

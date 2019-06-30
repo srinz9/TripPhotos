@@ -25,9 +25,6 @@ namespace TripPhotos
 		AppKit.NSButton chkPrefixYear { get; set; }
 
 		[Outlet]
-		AppKit.NSButton chkProcessHEIC { get; set; }
-
-		[Outlet]
 		AppKit.NSButton chkProcessJpegs { get; set; }
 
 		[Outlet]
@@ -83,11 +80,6 @@ namespace TripPhotos
 			if (btnDestinationFolder != null) {
 				btnDestinationFolder.Dispose ();
 				btnDestinationFolder = null;
-			}
-
-			if (chkProcessHEIC != null) {
-				chkProcessHEIC.Dispose ();
-				chkProcessHEIC = null;
 			}
 
 			if (btnStart1 != null) {
