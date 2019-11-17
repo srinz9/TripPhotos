@@ -7,7 +7,10 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using Microsoft.WindowsAPICodePack.Shell;
+using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
 
+//https://docs.microsoft.com/en-us/xamarin/mac/get-started/hello-mac#creating-the-interface
 // TODO: different thread - UI freezing
 namespace Sri.TripPhotos
 {
@@ -320,6 +323,17 @@ namespace Sri.TripPhotos
                                 // videos
                                 dtaken = file.LastWriteTime;
                                 dateTaken = GetDateTaken(dtaken);
+
+                                // https://markheath.net/post/how-to-get-media-file-duration-in-c
+                                try
+                                {
+                                    using (var shell = ShellObject.FromParsingName(file.FullName))
+                                    {
+                                        dateTaken = GetDateTaken(shell.Properties.System.Media.DateEncoded.Value);
+                                    }
+                                }
+                                catch { } // TODO: just eat up :)
+
                                 processing = true;
                             }
 
