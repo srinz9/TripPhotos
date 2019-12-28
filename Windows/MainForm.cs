@@ -1,14 +1,13 @@
 ﻿using ImageMagick;
+using Microsoft.WindowsAPICodePack.Shell;
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using Microsoft.WindowsAPICodePack.Shell;
-using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
 
 //https://docs.microsoft.com/en-us/xamarin/mac/get-started/hello-mac#creating-the-interface
 // TODO: different thread - UI freezing
@@ -37,7 +36,6 @@ namespace Sri.TripPhotos
             // there has to be source and
             // destination or rename source files
             btnStart.Enabled = (!string.IsNullOrEmpty(txtSource.Text.Trim()) &&
-                                (!string.IsNullOrEmpty(txtDestination.Text.Trim()) || chkRenameSourceFiles.Checked) &&
                                 chkProcessVideos.Checked || chkProcessJpegs.Checked);
         }
 
@@ -166,23 +164,15 @@ namespace Sri.TripPhotos
             Nullable<DateTime> dtaken;
             bool processing = false;
             richTextFailed.Text = string.Empty;
+            FileInfo[] files = null;
+            List<DirectoryInfo> directories = new List<DirectoryInfo>();
 
             try
             {
                 txtSource.Text = txtSource.Text.TrimEnd(Path.DirectorySeparatorChar);
+                destinationDirectory = txtSource.Text;
 
-                // if rename source files, then destination directory is the same as source
-                if (chkRenameSourceFiles.Checked)
-                {
-                    destinationDirectory = txtSource.Text;
-                }
-                else
-                {
-                    destinationDirectory = txtDestination.Text;
-                }
-
-                if (!(Directory.Exists(txtSource.Text) &&
-                        Directory.Exists(destinationDirectory)))
+                if (!Directory.Exists(txtSource.Text))
                 {
                     MessageBox.Show(this,
                                     "Folder doesn't exist",
@@ -194,275 +184,205 @@ namespace Sri.TripPhotos
                 }
 
                 DirectoryInfo di = new DirectoryInfo(txtSource.Text);
-                FileInfo[] files = di.GetFiles("*.*", SearchOption.AllDirectories);
-                totalFiles = files.Length;
-
-                DirectoryInfo[] directories = di.GetDirectories("*", SearchOption.AllDirectories);
-                string backupFolder = "backup_" + new Random().Next(100).ToString();
-
-                // create backup folder in the destination folder
-                if (chkBackup.Checked)
-                {
-                    // if there are no sub directories, at least one BackUp has to be created
-                    Directory.CreateDirectory(string.Format("{0}{1}{2}",
-                                                            destinationDirectory,
-                                                            Path.DirectorySeparatorChar,
-                                                            backupFolder));
-
-                    foreach (DirectoryInfo directory in directories)
-                    {
-                        newDirectory = directory.FullName.Replace(txtSource.Text,
-                                                                  string.Format("{0}{1}{2}",
-                                                                                destinationDirectory,
-                                                                                Path.DirectorySeparatorChar,
-                                                                                backupFolder));
-                        Directory.CreateDirectory(newDirectory);
-                    }
-                }
+                totalFiles = di.GetFiles("*.*", SearchOption.AllDirectories).Length;
+                directories.Add(di);
+                directories.AddRange(di.GetDirectories("*", SearchOption.AllDirectories));
 
                 progressBar.Minimum = 0;
                 progressBar.Maximum = totalFiles;
                 progressBar.Value = processedFiles;
                 progressBar.Visible = true;
 
-                foreach (FileInfo file in files)
+                foreach (DirectoryInfo directory in directories)
                 {
-                    try
+                    files = directory.GetFiles("*.*", SearchOption.TopDirectoryOnly);
+                    foreach (FileInfo file in files)
                     {
-                        // if backup is needed, then copy file
-                        // every file type
-                        if (chkBackup.Checked)
+                        try
                         {
-                            File.Copy(file.FullName, file.FullName.Replace(txtSource.Text,
-                                                                           string.Format("{0}{1}{2}",
-                                                                                         destinationDirectory,
-                                                                                         Path.DirectorySeparatorChar,
-                                                                                         backupFolder)));
-                        }
+                            extension = file.Extension;
+                            destFileName = file.Name;
 
-                        extension = file.Extension;
-                        destFileName = file.Name;
-
-                        // if jp*g then process
-                        // else just move to destination
-                        if ((string.Compare(file.Extension, ".jpg", true) == 0) ||
-                            (string.Compare(file.Extension, ".jpeg", true) == 0) ||
-                            (string.Compare(file.Extension, ".avi", true) == 0) ||
-                            (string.Compare(file.Extension, ".mp4", true) == 0) ||
-                            (string.Compare(file.Extension, ".mov", true) == 0) ||
-                            (string.Compare(file.Extension, ".wav", true) == 0) ||
-                            (string.Compare(file.Extension, ".heic", true) == 0))
-                        //|| (string.Compare(file.Extension, ".cr2", true) == 0)
-                        {
-                            tobeProcessedFiles++;
-                            dateTaken = null;
-                            dtaken = null;
-                            processing = false;
-
-                            if (((string.Compare(file.Extension, ".jpg", true) == 0) ||
-                                 (string.Compare(file.Extension, ".jpeg", true) == 0))
-                                 &&
-                                 (chkProcessJpegs.Checked))
-                            // ||
-                            // (string.Compare(file.Extension, ".cr2", true) == 0))
+                            // if jp*g then process
+                            // else just move to destination
+                            if ((string.Compare(file.Extension, ".jpg", true) == 0) ||
+                                (string.Compare(file.Extension, ".jpeg", true) == 0) ||
+                                (string.Compare(file.Extension, ".avi", true) == 0) ||
+                                (string.Compare(file.Extension, ".mp4", true) == 0) ||
+                                (string.Compare(file.Extension, ".mov", true) == 0) ||
+                                (string.Compare(file.Extension, ".wav", true) == 0) ||
+                                (string.Compare(file.Extension, ".heic", true) == 0))
+                            //|| (string.Compare(file.Extension, ".cr2", true) == 0)
                             {
-                                // jpegs
-                                try
-                                {
-                                    image = Image.FromFile(file.FullName);
+                                tobeProcessedFiles++;
+                                dateTaken = null;
+                                dtaken = null;
+                                processing = false;
 
-                                    // http://msdn.microsoft.com/en-us/library/system.drawing.imaging.propertyitem.id.aspx
-                                    //Property Item PropertyTagExifDTOrig - 0x9003 (36867) corresponds to the Date Taken  
-                                    PropertyItem propDateTaken = image.GetPropertyItem(0x9003);
-
-                                    //Convert date taken metadata to a DateTime object   
-                                    dtaken = DateTime.ParseExact(Encoding.ASCII.GetString(propDateTaken.Value),
-                                                                    "yyyy:MM:dd HH:mm:ss\0",
-                                                                    null);
-
-                                    dateTaken = GetDateTaken(dtaken);
-                                    processing = true;
-                                }
-                                catch (Exception ex)
+                                if (((string.Compare(file.Extension, ".jpg", true) == 0) ||
+                                     (string.Compare(file.Extension, ".jpeg", true) == 0))
+                                     &&
+                                     (chkProcessJpegs.Checked))
+                                // ||
+                                // (string.Compare(file.Extension, ".cr2", true) == 0))
                                 {
-                                    richTextFailed.AppendText(string.Format("{0} - {1}\r\n",
-                                                                            file.FullName,
-                                                                            ex.Message));
-                                }
-                                finally
-                                {
-                                    if (image != null)
+                                    // jpegs
+                                    try
                                     {
-                                        image.Dispose();
+                                        image = Image.FromFile(file.FullName);
+
+                                        // http://msdn.microsoft.com/en-us/library/system.drawing.imaging.propertyitem.id.aspx
+                                        //Property Item PropertyTagExifDTOrig - 0x9003 (36867) corresponds to the Date Taken  
+                                        PropertyItem propDateTaken = image.GetPropertyItem(0x9003);
+
+                                        //Convert date taken metadata to a DateTime object   
+                                        dtaken = DateTime.ParseExact(Encoding.ASCII.GetString(propDateTaken.Value),
+                                                                        "yyyy:MM:dd HH:mm:ss\0",
+                                                                        null);
+
+                                        dateTaken = GetDateTaken(dtaken);
+                                        processing = true;
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        richTextFailed.AppendText(string.Format("{0} - {1}\r\n",
+                                                                                file.FullName,
+                                                                                ex.Message));
+                                    }
+                                    finally
+                                    {
+                                        if (image != null)
+                                        {
+                                            image.Dispose();
+                                        }
                                     }
                                 }
-                            }
-                            else if ((string.Compare(file.Extension, ".heic", true) == 0) && chkProcessHEIC.Checked)
-                            {
-                                using (MagickImage img = new MagickImage(file))
+                                else if ((string.Compare(file.Extension, ".heic", true) == 0) && chkProcessHEIC.Checked)
                                 {
-                                    img.Format = MagickFormat.Jpeg;
-                                    ExifProfile exif = img.GetExifProfile();
-
-                                    //Convert date taken metadata to a DateTime object   
-                                    dtaken = DateTime.ParseExact(exif.GetValue(ExifTag.DateTimeOriginal).ToString(),
-                                                                    "yyyy:MM:dd HH:mm:ss",
-                                                                    null);
-
-                                    dateTaken = GetDateTaken(dtaken);
-                                    processing = true;
-                                }
-                            }
-                            else if (((string.Compare(file.Extension, ".avi", true) == 0) ||
-                                      (string.Compare(file.Extension, ".mp4", true) == 0) ||
-                                      (string.Compare(file.Extension, ".mov", true) == 0) ||
-                                      (string.Compare(file.Extension, ".wav", true) == 0)) 
-                                        &&
-                                      (chkProcessVideos.Checked))
-                            {
-                                // videos
-                                dtaken = file.LastWriteTime;
-                                dateTaken = GetDateTaken(dtaken);
-
-                                // https://markheath.net/post/how-to-get-media-file-duration-in-c
-                                try
-                                {
-                                    using (var shell = ShellObject.FromParsingName(file.FullName))
+                                    using (MagickImage img = new MagickImage(file))
                                     {
-                                        dateTaken = GetDateTaken(shell.Properties.System.Media.DateEncoded.Value);
+                                        img.Format = MagickFormat.Jpeg;
+                                        ExifProfile exif = img.GetExifProfile();
+
+                                        //Convert date taken metadata to a DateTime object   
+                                        dtaken = DateTime.ParseExact(exif.GetValue(ExifTag.DateTimeOriginal).ToString(),
+                                                                        "yyyy:MM:dd HH:mm:ss",
+                                                                        null);
+
+                                        dateTaken = GetDateTaken(dtaken);
+                                        processing = true;
                                     }
                                 }
-                                catch { } // TODO: just eat up :)
-
-                                processing = true;
-                            }
-
-                            if (processing)
-                            {
-                                if (dateTaken.HasValue)
+                                else if (((string.Compare(file.Extension, ".avi", true) == 0) ||
+                                          (string.Compare(file.Extension, ".mp4", true) == 0) ||
+                                          (string.Compare(file.Extension, ".mov", true) == 0) ||
+                                          (string.Compare(file.Extension, ".wav", true) == 0))
+                                            &&
+                                          (chkProcessVideos.Checked))
                                 {
-                                    if (chkPrefixYear.Checked)
+                                    // videos
+                                    dtaken = file.LastWriteTime;
+                                    dateTaken = GetDateTaken(dtaken);
+
+                                    // https://markheath.net/post/how-to-get-media-file-duration-in-c
+                                    try
                                     {
-                                        destFileName = dateTaken.Value.ToString("yyyy_MMdd_HHmmss");
+                                        using (var shell = ShellObject.FromParsingName(file.FullName))
+                                        {
+                                            dateTaken = GetDateTaken(shell.Properties.System.Media.DateEncoded.Value);
+                                        }
+                                    }
+                                    catch { } // TODO: just eat up :)
+
+                                    processing = true;
+                                }
+
+                                if (processing)
+                                {
+                                    if (dateTaken.HasValue)
+                                    {
+                                        if (chkPrefixYear.Checked)
+                                        {
+                                            destFileName = dateTaken.Value.ToString("yyyy_MMdd_HHmmss");
+                                        }
+                                        else
+                                        {
+                                            destFileName = dateTaken.Value.ToString("MMdd_HHmmss");
+                                        }
                                     }
                                     else
                                     {
-                                        destFileName = dateTaken.Value.ToString("MMdd_HHmmss");
+                                        destFileName = Path.GetFileNameWithoutExtension(file.Name);
                                     }
-                                }
-                                else
-                                {
-                                    destFileName = Path.GetFileNameWithoutExtension(file.Name);
-                                }
 
-                                if (chkRenameSourceFiles.Checked)
-                                {
                                     destFileFullName = GetDestinationFileFullName(file.FullName,
                                                                                     Directory.GetParent(file.FullName).FullName,
                                                                                     destFileName,
                                                                                     extension);
-                                }
-                                else
-                                {
-                                    destFileFullName = GetDestinationFileFullName(file.FullName,
-                                                                                    destinationDirectory,
-                                                                                    destFileName,
-                                                                                    extension);
-                                }
 
-                                // TODO: what if the same random # is regenerated?
-                                // then we will lose a file
-                                if (File.Exists(destFileFullName))
-                                {
-                                    if (chkPrefixYear.Checked)
+                                    // already renamed / don't need to process
+                                    if (string.Compare(file.FullName, destFileFullName, true) != 0)
                                     {
-                                        newDestFileName = string.Format("{0}_{1}",
-                                                                    dateTaken.Value.ToString("yyyy_MMdd_HHmmss"),
-                                                                    new Random().Next(100));
+                                        // TODO: what if the same random # is regenerated?
+                                        // then we will lose a file
+                                        if (File.Exists(destFileFullName))
+                                        {
+                                            if (chkPrefixYear.Checked)
+                                            {
+                                                newDestFileName = string.Format("{0}_{1}",
+                                                                            dateTaken.Value.ToString("yyyy_MMdd_HHmmss"),
+                                                                            new Random().Next(100));
+                                            }
+                                            else
+                                            {
+                                                newDestFileName = string.Format("{0}_{1}",
+                                                                            dateTaken.Value.ToString("MMdd_HHmmss"),
+                                                                            new Random().Next(100));
+                                            }
+
+                                            destFileFullName = destFileFullName.Replace(destFileName, newDestFileName);
+                                        }
+
+                                        //if (chkAdjustOrientation.Checked && !OrientImage (file.FullName, destFileFullName))
+                                        //{
+                                        File.Copy(file.FullName, destFileFullName, false);
+                                        File.Delete(file.FullName);
                                     }
-                                    else
+
+                                    if ((string.Compare(file.Extension, ".heic", true) == 0) && chkConvertHEIC.Checked)
                                     {
-                                        newDestFileName = string.Format("{0}_{1}",
-                                                                    dateTaken.Value.ToString("MMdd_HHmmss"),
-                                                                    new Random().Next(100));
+                                        using (MagickImage img = new MagickImage(destFileFullName))
+                                        {
+                                            img.Format = MagickFormat.Jpeg;
+                                            img.Write(Regex.Replace(destFileFullName, ".heic", ".jpg", RegexOptions.IgnoreCase));
+                                            File.Delete(destFileFullName);
+                                        }
                                     }
+                                    //}
 
-                                    destFileFullName = destFileFullName.Replace(destFileName, newDestFileName);
+                                    processedFiles++;
                                 }
 
-                                //if (chkAdjustOrientation.Checked && !OrientImage (file.FullName, destFileFullName))
-                                //{
-                                File.Copy(file.FullName, destFileFullName, false);
-                                if ((string.Compare(file.Extension, ".heic", true) == 0) && chkConvertHEIC.Checked)
-                                {
-                                    using (MagickImage img = new MagickImage(destFileFullName))
-                                    {
-                                        img.Format = MagickFormat.Jpeg;
-                                        img.Write(Regex.Replace(destFileFullName, ".heic", ".jpg", RegexOptions.IgnoreCase));
-                                        File.Delete(destFileFullName);
-                                    }
-                                }
-                                //}
-
-                                processedFiles++;
-
-                                // if renaming source files then lets delete
-                                if (chkRenameSourceFiles.Checked)
-                                {
-                                    File.Delete(file.FullName);
-                                }
+                                destFileFullName = string.Empty;
                             }
 
-                            destFileFullName = string.Empty;
+                            progressBar.Value++;
                         }
-                        else // not a jp*g or avi
+                        catch (Exception ex)
                         {
-                            if (!chkRenameSourceFiles.Checked)
-                            {
-                                destFileFullName = GetDestinationFileFullName(file.FullName, destinationDirectory, destFileName, extension);
-                                File.Copy(file.FullName, destFileFullName, false);
-
-                                // if renaming source files then lets delete
-                                if (chkRenameSourceFiles.Checked)
-                                {
-                                    File.Delete(file.FullName);
-                                }
-                            }
+                            richTextFailed.AppendText(string.Format("{0} - {1} - {2}\r\n",
+                                                                    file.FullName,
+                                                                    destFileFullName,
+                                                                    ex.Message));
                         }
-
-                        progressBar.Value++;
-                    }
-                    catch (Exception ex)
-                    {
-                        richTextFailed.AppendText(string.Format("{0} - {1} - {2}\r\n",
-                                                                file.FullName,
-                                                                destFileFullName,
-                                                                ex.Message));
                     }
                 }
-
-                // Delete empty source directories
-                // if (chkDeleteSourceFiles.Checked)
-                // {
-                for (int i = directories.Length - 1; i >= 0; i--)
-                {
-                    if (directories[i].GetFiles().Length == 0)
-                    {
-                        directories[i].Delete();
-                    }
-                }
-                // }
 
                 progressBar.Visible = false;
 
                 richTextFailed.AppendText(string.Format("{0}/{1} files processed \r\n{2} total files",
                                               processedFiles, tobeProcessedFiles, totalFiles));
 
-                if (chkOpenFolders.Checked)
-                {
-                    Process.Start(txtSource.Text);
-                    Process.Start(destinationDirectory);
-                }
             }
             catch (Exception ex)
             {
@@ -483,17 +403,6 @@ namespace Sri.TripPhotos
             return destinationFileFullName;
         }
 
-        private void btnDestination_Click(object sender, EventArgs e)
-        {
-            folderBrowserDestination.SelectedPath = Path.Combine(Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.Personal)).FullName,
-                                                                 "SkyDrive");
-
-            if (folderBrowserDestination.ShowDialog(this) == DialogResult.OK)
-            {
-                txtDestination.Text = folderBrowserDestination.SelectedPath;
-            }
-        }
-
         private void btnSource_Click(object sender, EventArgs e)
         {
             folderBrowserSource.SelectedPath = Path.Combine(Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.Personal)).FullName,
@@ -505,24 +414,8 @@ namespace Sri.TripPhotos
             }
         }
 
-        private void txtDestination_Changed(object sender, EventArgs e)
-        {
-            EnableStart();
-        }
-
         private void txtSource_Changed(object sender, EventArgs e)
-        {
-            txtDestination.Text = txtDestination.Text.TrimEnd(Path.DirectorySeparatorChar);
-            EnableStart();
-        }
-
-        private void chkRenameSourceFiles_CheckedChanged(object sender, EventArgs e)
-        {
-            bool isNotChecked = !chkRenameSourceFiles.Checked;
-
-            txtDestination.Enabled = isNotChecked;
-            btnDestination.Enabled = isNotChecked;
-
+        { 
             EnableStart();
         }
 
@@ -536,5 +429,6 @@ namespace Sri.TripPhotos
             chkConvertHEIC.Enabled = chkProcessHEIC.Checked;
             chkConvertHEIC.Checked = chkProcessHEIC.Checked;
         }
+
     }
 }
