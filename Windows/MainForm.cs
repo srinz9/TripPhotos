@@ -455,12 +455,8 @@ namespace Sri.TripPhotos
 
                 progressBar.Visible = false;
 
-                MessageBox.Show(this,
-                                string.Format("{0}/{1} files processed \r\n{2} total files",
-                                              processedFiles, tobeProcessedFiles, totalFiles),
-                                "File renamer",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Information);
+                richTextFailed.AppendText(string.Format("{0}/{1} files processed \r\n{2} total files",
+                                              processedFiles, tobeProcessedFiles, totalFiles));
 
                 if (chkOpenFolders.Checked)
                 {
