@@ -89,7 +89,7 @@
             this.btnStart.Enabled = false;
             this.btnStart.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnStart.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnStart.Location = new System.Drawing.Point(637, 89);
+            this.btnStart.Location = new System.Drawing.Point(637, 92);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(68, 23);
             this.btnStart.TabIndex = 5;
@@ -100,7 +100,7 @@
             // richTextFailed
             // 
             this.richTextFailed.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.richTextFailed.Location = new System.Drawing.Point(12, 114);
+            this.richTextFailed.Location = new System.Drawing.Point(12, 124);
             this.richTextFailed.Name = "richTextFailed";
             this.richTextFailed.ReadOnly = true;
             this.richTextFailed.Size = new System.Drawing.Size(693, 257);
@@ -112,7 +112,7 @@
             // 
             this.progressBar.Location = new System.Drawing.Point(12, 92);
             this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(619, 16);
+            this.progressBar.Size = new System.Drawing.Size(619, 23);
             this.progressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.progressBar.TabIndex = 8;
             this.progressBar.Visible = false;
@@ -240,7 +240,7 @@
             // lblVersion
             // 
             this.lblVersion.AutoSize = true;
-            this.lblVersion.Location = new System.Drawing.Point(660, 374);
+            this.lblVersion.Location = new System.Drawing.Point(660, 384);
             this.lblVersion.Name = "lblVersion";
             this.lblVersion.Size = new System.Drawing.Size(45, 15);
             this.lblVersion.TabIndex = 20;
@@ -250,7 +250,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(713, 391);
+            this.ClientSize = new System.Drawing.Size(716, 407);
             this.Controls.Add(this.lblVersion);
             this.Controls.Add(this.chkProcessHEIC);
             this.Controls.Add(this.chkConvertHEIC);

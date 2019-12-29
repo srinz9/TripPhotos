@@ -146,7 +146,6 @@ namespace Sri.TripPhotos
             InitializeComponent();
             this.lblVersion.Text = Application.ProductVersion;
         }
-
         private void btnStart_Click(object sender, EventArgs e)
         {
             string destFileFullName = string.Empty;
