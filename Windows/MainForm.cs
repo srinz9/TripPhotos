@@ -152,7 +152,6 @@ namespace Sri.TripPhotos
             string destFileName = string.Empty;
             string temp = string.Empty;
             string extension = string.Empty;
-            string newDirectory;
             string destinationDirectory;
             string newDestFileName;
             int totalFiles = 0;
@@ -261,7 +260,7 @@ namespace Sri.TripPhotos
                                     using (MagickImage img = new MagickImage(file))
                                     {
                                         img.Format = MagickFormat.Jpeg;
-                                        ExifProfile exif = img.GetExifProfile();
+                                        var exif = img.GetExifProfile();
 
                                         //Convert date taken metadata to a DateTime object   
                                         dtaken = DateTime.ParseExact(exif.GetValue(ExifTag.DateTimeOriginal).ToString(),
@@ -414,7 +413,7 @@ namespace Sri.TripPhotos
         }
 
         private void txtSource_Changed(object sender, EventArgs e)
-        { 
+        {
             EnableStart();
         }
 
