@@ -47,6 +47,8 @@
             this.chkConvertHEIC = new System.Windows.Forms.CheckBox();
             this.chkProcessHEIC = new System.Windows.Forms.CheckBox();
             this.lblVersion = new System.Windows.Forms.Label();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.label2 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -100,10 +102,10 @@
             // richTextFailed
             // 
             this.richTextFailed.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.richTextFailed.Location = new System.Drawing.Point(12, 124);
+            this.richTextFailed.Location = new System.Drawing.Point(12, 143);
             this.richTextFailed.Name = "richTextFailed";
             this.richTextFailed.ReadOnly = true;
-            this.richTextFailed.Size = new System.Drawing.Size(693, 257);
+            this.richTextFailed.Size = new System.Drawing.Size(693, 238);
             this.richTextFailed.TabIndex = 7;
             this.richTextFailed.TabStop = false;
             this.richTextFailed.Text = "";
@@ -246,11 +248,27 @@
             this.lblVersion.TabIndex = 20;
             this.lblVersion.Text = "Version";
             // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
+            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(12, 118);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(0, 15);
+            this.label2.TabIndex = 4;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(716, 407);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.lblVersion);
             this.Controls.Add(this.chkProcessHEIC);
             this.Controls.Add(this.chkConvertHEIC);
@@ -299,6 +317,8 @@
         private System.Windows.Forms.CheckBox chkConvertHEIC;
         private System.Windows.Forms.CheckBox chkProcessHEIC;
         private System.Windows.Forms.Label lblVersion;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.Label label2;
     }
 }
 

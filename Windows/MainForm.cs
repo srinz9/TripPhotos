@@ -2,6 +2,7 @@
 using Microsoft.WindowsAPICodePack.Shell;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -30,6 +31,13 @@ namespace Sri.TripPhotos
     {
         // PropertyTagOrientation 0x0112 - we know thos prop is an integer
         private const int _orientationId = 0x0112;
+
+        private int _totalFiles = 0;
+        private int _tobeProcessedFiles = 0;
+        private int _processedFiles = 0;
+
+        private StringBuilder _message = new StringBuilder();
+        private StringBuilder _specialMessage = new StringBuilder();
 
         private void EnableStart()
         {
@@ -145,53 +153,71 @@ namespace Sri.TripPhotos
         {
             InitializeComponent();
             this.lblVersion.Text = Application.ProductVersion;
+            backgroundWorker1.WorkerReportsProgress = true;
+            backgroundWorker1.WorkerSupportsCancellation = true;
+            progressBar.Minimum = 0;
         }
         private void btnStart_Click(object sender, EventArgs e)
         {
+            richTextFailed.Text = string.Empty;
+            progressBar.Visible = true;
+
+            try
+            {
+                DirectoryInfo di = new DirectoryInfo(txtSource.Text);
+                _totalFiles = di.GetFiles("*.*", SearchOption.AllDirectories).Length;
+
+                progressBar.Maximum = _totalFiles;
+
+                if (backgroundWorker1.IsBusy != true)
+                {
+                    backgroundWorker1.RunWorkerAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                richTextFailed.AppendText(ex.Message);
+            }
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
             string destFileFullName = string.Empty;
             string destFileName = string.Empty;
             string temp = string.Empty;
             string extension = string.Empty;
             string destinationDirectory;
             string newDestFileName;
-            int totalFiles = 0;
-            int tobeProcessedFiles = 0;
-            int processedFiles = 0;
+
+            _tobeProcessedFiles = 0;
+            _processedFiles = 0;
+            _message.Clear();
+            _specialMessage.Clear();
+
             Image image = null;
             Nullable<DateTime> dateTaken;
             Nullable<DateTime> dtaken;
             bool processing = false;
-            richTextFailed.Text = string.Empty;
+           
             FileInfo[] files = null;
             List<DirectoryInfo> directories = new List<DirectoryInfo>();
 
-            try
+            txtSource.Text = txtSource.Text.TrimEnd(Path.DirectorySeparatorChar);
+            destinationDirectory = txtSource.Text;
+
+            DirectoryInfo di = new DirectoryInfo(txtSource.Text);
+            directories.Add(di);
+            directories.AddRange(di.GetDirectories("*", SearchOption.AllDirectories));
+
+            foreach (DirectoryInfo directory in directories)
             {
-                txtSource.Text = txtSource.Text.TrimEnd(Path.DirectorySeparatorChar);
-                destinationDirectory = txtSource.Text;
-
-                if (!Directory.Exists(txtSource.Text))
+                if (worker.CancellationPending == true)
                 {
-                    MessageBox.Show(this,
-                                    "Folder doesn't exist",
-                                    "Error",
-                                    MessageBoxButtons.OK,
-                                    MessageBoxIcon.Error);
-
-                    return;
+                    e.Cancel = true;
+                    break;
                 }
-
-                DirectoryInfo di = new DirectoryInfo(txtSource.Text);
-                totalFiles = di.GetFiles("*.*", SearchOption.AllDirectories).Length;
-                directories.Add(di);
-                directories.AddRange(di.GetDirectories("*", SearchOption.AllDirectories));
-
-                progressBar.Minimum = 0;
-                progressBar.Maximum = totalFiles;
-                progressBar.Value = processedFiles;
-                progressBar.Visible = true;
-
-                foreach (DirectoryInfo directory in directories)
+                else
                 {
                     files = directory.GetFiles("*.*", SearchOption.TopDirectoryOnly);
                     foreach (FileInfo file in files)
@@ -212,15 +238,15 @@ namespace Sri.TripPhotos
                                 (string.Compare(file.Extension, ".heic", true) == 0))
                             //|| (string.Compare(file.Extension, ".cr2", true) == 0)
                             {
-                                tobeProcessedFiles++;
+                                _tobeProcessedFiles++;
                                 dateTaken = null;
                                 dtaken = null;
                                 processing = false;
 
                                 if (((string.Compare(file.Extension, ".jpg", true) == 0) ||
-                                     (string.Compare(file.Extension, ".jpeg", true) == 0))
-                                     &&
-                                     (chkProcessJpegs.Checked))
+                                        (string.Compare(file.Extension, ".jpeg", true) == 0))
+                                        &&
+                                        (chkProcessJpegs.Checked))
                                 // ||
                                 // (string.Compare(file.Extension, ".cr2", true) == 0))
                                 {
@@ -243,9 +269,8 @@ namespace Sri.TripPhotos
                                     }
                                     catch (Exception ex)
                                     {
-                                        richTextFailed.AppendText(string.Format("{0} - {1}\r\n",
-                                                                                file.FullName,
-                                                                                ex.Message));
+
+                                        _message.AppendLine(string.Format("{0} - {1}", file.FullName, ex.Message));
                                     }
                                     finally
                                     {
@@ -272,11 +297,11 @@ namespace Sri.TripPhotos
                                     }
                                 }
                                 else if (((string.Compare(file.Extension, ".avi", true) == 0) ||
-                                          (string.Compare(file.Extension, ".mp4", true) == 0) ||
-                                          (string.Compare(file.Extension, ".mov", true) == 0) ||
-                                          (string.Compare(file.Extension, ".wav", true) == 0))
+                                            (string.Compare(file.Extension, ".mp4", true) == 0) ||
+                                            (string.Compare(file.Extension, ".mov", true) == 0) ||
+                                            (string.Compare(file.Extension, ".wav", true) == 0))
                                             &&
-                                          (chkProcessVideos.Checked))
+                                            (chkProcessVideos.Checked))
                                 {
                                     // videos
                                     dtaken = file.LastWriteTime;
@@ -356,39 +381,56 @@ namespace Sri.TripPhotos
                                             File.Delete(destFileFullName);
                                         }
                                     }
-                                    //}
 
-                                    processedFiles++;
+                                    _processedFiles++;
                                 }
 
                                 destFileFullName = string.Empty;
                             }
 
-                            progressBar.Value++;
+                            worker.ReportProgress(_tobeProcessedFiles);
                         }
                         catch (Exception ex)
                         {
-                            richTextFailed.AppendText(string.Format("{0} - {1} - {2}\r\n",
-                                                                    file.FullName,
-                                                                    destFileFullName,
-                                                                    ex.Message));
+                            _specialMessage.AppendLine(string.Format("{0} - {1} - {2}", file.FullName, destFileFullName, ex.Message));
+                            worker.ReportProgress(-100);
                         }
                     }
                 }
-
-                progressBar.Visible = false;
-
-                richTextFailed.AppendText(string.Format("{0}/{1} files processed \r\n{2} total files",
-                                              processedFiles, tobeProcessedFiles, totalFiles));
-
             }
-            catch (Exception ex)
+        }
+
+        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            if (e.ProgressPercentage == -100)
             {
-                MessageBox.Show(this,
-                    ex.Message,
-                    "Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                richTextFailed.AppendText(_specialMessage.ToString());
+                _specialMessage.Clear();
+            }
+            else
+            {
+                progressBar.Value++;
+                label2.Text = string.Format("{0}/{1}", e.ProgressPercentage, _totalFiles);
+            }
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            richTextFailed.AppendText(_message.ToString());
+
+            progressBar.Visible = false;
+            if (e.Cancelled == true)
+            {
+                richTextFailed.AppendText("Canceled!");
+            }
+            else if (e.Error != null)
+            {
+                richTextFailed.AppendText("Error: " + e.Error.Message);
+            }
+            else
+            {
+                richTextFailed.AppendText(string.Format("{0}/{1} files processed \r\n{2} total files",
+                                              _processedFiles, _tobeProcessedFiles, _totalFiles));
             }
         }
 
