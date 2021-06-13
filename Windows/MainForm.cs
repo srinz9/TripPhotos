@@ -167,7 +167,7 @@ namespace Sri.TripPhotos
                 DirectoryInfo di = new DirectoryInfo(txtSource.Text);
                 _totalFiles = di.GetFiles("*.*", SearchOption.AllDirectories).Length;
 
-                progressBar.Maximum = _totalFiles;
+                progressBar.Maximum = _totalFiles+1;
 
                 if (backgroundWorker1.IsBusy != true)
                 {
