@@ -153,14 +153,18 @@ namespace Sri.TripPhotos
         {
             InitializeComponent();
             this.lblVersion.Text = Application.ProductVersion;
+
+            progressBar.Minimum = 0;
+            progressBar.Value = 0;
+
             backgroundWorker1.WorkerReportsProgress = true;
             backgroundWorker1.WorkerSupportsCancellation = true;
-            progressBar.Minimum = 0;
         }
         private void btnStart_Click(object sender, EventArgs e)
         {
             richTextFailed.Text = string.Empty;
             progressBar.Visible = true;
+            progressBar.Value = 0;
 
             try
             {
