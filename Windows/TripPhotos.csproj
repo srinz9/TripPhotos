@@ -120,10 +120,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>rd /s /q "$(ProjectDir)\obj"
-del /s /q $(TargetDir)\*.xml
-del /s /q $(TargetDir)\*.pdb
-del /s /q $(TargetDir)\*.*lastcodeanalysissucceeded</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>

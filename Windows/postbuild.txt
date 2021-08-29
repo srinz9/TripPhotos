@@ -1,0 +1,4 @@
+rd /s /q "$(ProjectDir)\obj"
+del /s /q $(TargetDir)\*.xml
+del /s /q $(TargetDir)\*.pdb
+del /s /q $(TargetDir)\*.*lastcodeanalysissucceeded
