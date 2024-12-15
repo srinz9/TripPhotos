@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -441,6 +442,47 @@ namespace Sri.TripPhotos
         private string GetDestinationFileFullName(string fileFullName, string destinationDirectory, string destFileName, string extension)
         {
             string destinationFileFullName = string.Empty;
+            string format = "yyyyMMdd_HHmmss";
+            double minutes = 0;
+            double temp = 0;
+
+            // unsure what changes recently - so a hack for .mov files
+            // terrible hack 
+            if (destFileName.Contains("000_iOS"))
+            {
+                // 20241207_075750 000_iOS
+                destFileName = destFileName.Replace("000_iOS", "");
+                // 20241207_075750
+
+                DateTime dt = DateTime.ParseExact(destFileName, format, CultureInfo.InvariantCulture);
+
+                if (double.TryParse(txtHours.Text, out temp))
+                {
+                    minutes = temp * 60;
+                }
+
+                if (double.TryParse(txtMinutes.Text, out temp))
+                {
+                    minutes += temp;
+                }
+
+                dt = dt.AddMinutes(minutes);
+
+                if (chkPrefixYear.Checked)
+                {
+                    destFileName = string.Format("{0}_{1}",
+                                                dt.ToString("yyyy_MMdd_HHmmss"),
+                                                new Random().Next(100));
+                }
+                else
+                {
+                    destFileName = string.Format("{0}_{1}",
+                                                dt.ToString("MMdd_HHmmss"),
+                                                new Random().Next(100));
+                }
+                // 2024_1130_113159
+            }
+
             destinationFileFullName = Path.ChangeExtension(Path.Combine(destinationDirectory,
                                                                         destFileName),
                                                            extension);
